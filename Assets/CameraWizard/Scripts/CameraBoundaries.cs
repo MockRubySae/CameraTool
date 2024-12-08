@@ -5,6 +5,9 @@ using UnityEngine;
 public class CameraBoundaries : MonoBehaviour
 {
     public float radius = 10f;
+    public bool is3D = true;
+    public Vector2 minBoundary;
+    public Vector2 maxBoundary;
     private CameraController cameraController;
 
     private void Start()
@@ -16,12 +19,23 @@ public class CameraBoundaries : MonoBehaviour
     {
         Vector3 directionToCamera = transform.position - cameraController.player.position;
         float currentDistance = directionToCamera.magnitude;
-
-        if (currentDistance > radius)
+        if (is3D)
         {
-            Vector3 clampedPosition = cameraController.player.position + (directionToCamera.normalized * radius);
-            transform.position = clampedPosition;
+            if (currentDistance > radius)
+            {
+                Vector3 clampedPosition = cameraController.player.position + (directionToCamera.normalized * radius);
+                transform.position = clampedPosition;
+            }
         }
+        else
+        {
+            transform.position = new Vector3(
+                Mathf.Clamp(transform.position.x, minBoundary.x, maxBoundary.x),
+                Mathf.Clamp(transform.position.y, minBoundary.y, maxBoundary.y),
+                transform.position.z
+            );
+        }
+  
     }
     private void OnDrawGizmos()
     {
